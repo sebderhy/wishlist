@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -13,6 +12,7 @@ class Idea(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     text = db.Column(db.Text, nullable=False)
+    request_type = db.Column(db.String(50), nullable=False)  # New field
     votes = db.Column(db.Integer, default=0)
 
 @app.route('/')
@@ -24,8 +24,9 @@ def index():
 def submit_idea():
     name = request.form.get('idea_name')
     text = request.form.get('idea_text')
-    if name and text:
-        idea = Idea(name=name, text=text)
+    request_type = request.form.get('request_type')
+    if name and text and request_type:
+        idea = Idea(name=name, text=text, request_type=request_type)
         db.session.add(idea)
         db.session.commit()
     return redirect(url_for('thank_you'))
